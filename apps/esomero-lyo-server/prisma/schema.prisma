@@ -1,0 +1,80 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Subject {
+  courses     Course[]
+  createdAt   DateTime  @default(now())
+  description String?
+  id          String    @id @default(cuid())
+  name        String?
+  teachers    Teacher[]
+  updatedAt   DateTime  @updatedAt
+}
+
+model Course {
+  attendances Attendance[]
+  createdAt   DateTime     @default(now())
+  description String?
+  id          String       @id @default(cuid())
+  students    Student[]
+  subject     Subject?     @relation(fields: [subjectId], references: [id])
+  subjectId   String?
+  title       String?
+  updatedAt   DateTime     @updatedAt
+}
+
+model Teacher {
+  createdAt DateTime @default(now())
+  email     String?
+  id        String   @id @default(cuid())
+  name      String?
+  phone     String?
+  reports   Report[]
+  subject   Subject? @relation(fields: [subjectId], references: [id])
+  subjectId String?
+  updatedAt DateTime @updatedAt
+}
+
+model Student {
+  address     String?
+  attendances Attendance[]
+  course      Course?      @relation(fields: [courseId], references: [id])
+  courseId    String?
+  createdAt   DateTime     @default(now())
+  dateOfBirth DateTime?
+  email       String?
+  id          String       @id @default(cuid())
+  name        String?
+  reports     Report[]
+  updatedAt   DateTime     @updatedAt
+}
+
+model Attendance {
+  course    Course?   @relation(fields: [courseId], references: [id])
+  courseId  String?
+  createdAt DateTime  @default(now())
+  date      DateTime?
+  id        String    @id @default(cuid())
+  status    String?
+  student   Student?  @relation(fields: [studentId], references: [id])
+  studentId String?
+  updatedAt DateTime  @updatedAt
+}
+
+model Report {
+  content   String?
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  student   Student? @relation(fields: [studentId], references: [id])
+  studentId String?
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
+  teacherId String?
+  title     String?
+  updatedAt DateTime @updatedAt
+}
